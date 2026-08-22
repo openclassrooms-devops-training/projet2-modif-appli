@@ -2,6 +2,7 @@ package com.openclassrooms.etudiant.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.openclassrooms.etudiant.dto.RegisterDTO;
+import com.openclassrooms.etudiant.dto.LoginRequestDTO;
 import com.openclassrooms.etudiant.entities.User;
 import com.openclassrooms.etudiant.repository.UserRepository;
 import com.openclassrooms.etudiant.service.UserService;
@@ -28,6 +29,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 public class UserControllerTest {
 
     private static final String URL = "/api/register";
+    private static final String LOGIN_URL = "/api/login";
     private static final String FIRST_NAME = "John";
     private static final String LAST_NAME = "Doe";
     private static final String LOGIN = "login";
@@ -115,5 +117,43 @@ public class UserControllerTest {
                         .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(MockMvcResultMatchers.status().isCreated());
+    }
+
+    @Test
+    public void loginWithValidCredentialsReturnsToken() throws Exception {
+        User user = new User();
+        user.setFirstName(FIRST_NAME);
+        user.setLastName(LAST_NAME);
+        user.setLogin(LOGIN);
+        user.setPassword(PASSWORD);
+        userService.register(user);
+
+        LoginRequestDTO loginRequestDTO = new LoginRequestDTO();
+        loginRequestDTO.setLogin(LOGIN);
+        loginRequestDTO.setPassword(PASSWORD);
+
+        mockMvc.perform(MockMvcRequestBuilders.post(LOGIN_URL)
+                        .content(objectMapper.writeValueAsString(loginRequestDTO))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isOk());
+    }
+
+    @Test
+    public void loginWithWrongPasswordReturnsUnauthorized() throws Exception {
+        User user = new User();
+        user.setFirstName(FIRST_NAME);
+        user.setLastName(LAST_NAME);
+        user.setLogin(LOGIN);
+        user.setPassword(PASSWORD);
+        userService.register(user);
+
+        LoginRequestDTO loginRequestDTO = new LoginRequestDTO();
+        loginRequestDTO.setLogin(LOGIN);
+        loginRequestDTO.setPassword("wrong-password");
+
+        mockMvc.perform(MockMvcRequestBuilders.post(LOGIN_URL)
+                        .content(objectMapper.writeValueAsString(loginRequestDTO))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isUnauthorized());
     }
 }

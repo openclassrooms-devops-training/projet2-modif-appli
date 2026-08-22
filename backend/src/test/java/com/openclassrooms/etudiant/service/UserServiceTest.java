@@ -8,6 +8,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -28,6 +32,10 @@ public class UserServiceTest {
     private UserRepository userRepository;
     @Mock
     private PasswordEncoder passwordEncoder;
+    @Mock
+    private JwtService jwtService;
+    @Mock
+    private AuthenticationManager authenticationManager;
     @InjectMocks
     private UserService userService;
 
@@ -74,5 +82,26 @@ public class UserServiceTest {
         ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
         verify(userRepository).save(userCaptor.capture());
         assertThat(userCaptor.getValue()).isEqualTo(user);
+    }
+
+    @Test
+    public void test_login_returns_token_on_valid_credentials() {
+        User user = new User();
+        user.setLogin(LOGIN);
+        Authentication authentication = new UsernamePasswordAuthenticationToken(user, null);
+        when(authenticationManager.authenticate(any())).thenReturn(authentication);
+        when(jwtService.generateToken(user)).thenReturn("fake-jwt-token");
+
+        String token = userService.login(LOGIN, PASSWORD);
+
+        assertThat(token).isEqualTo("fake-jwt-token");
+    }
+
+    @Test
+    public void test_login_with_wrong_password_throws_BadCredentialsException() {
+        when(authenticationManager.authenticate(any())).thenThrow(new BadCredentialsException("Bad credentials"));
+
+        Assertions.assertThrows(BadCredentialsException.class,
+                () -> userService.login(LOGIN, "wrong-password"));
     }
 }

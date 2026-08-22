@@ -6,6 +6,9 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
@@ -20,6 +23,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
+    private final AuthenticationManager authenticationManager;
 
     public void register(User user) {
         Assert.notNull(user, "User must not be null");
@@ -36,14 +40,9 @@ public class UserService {
     public String login(String login, String password) {
         Assert.notNull(login, "Login must not be null");
         Assert.notNull(password, "Password must not be null");
-        Optional<User> user = userRepository.findByLogin(login);
-        if (user.isPresent() && passwordEncoder.matches(password, password)) {
-            UserDetails userDetails = org.springframework.security.core.userdetails.User.builder()
-                    .username(login).build();
-            return jwtService.generateToken(userDetails);
-        } else {
-            throw new IllegalArgumentException("Invalid credentials");
-        }
+        Authentication authentication = authenticationManager.authenticate(
+            new UsernamePasswordAuthenticationToken(login, password));
+        return jwtService.generateToken((UserDetails) authentication.getPrincipal());
     }
 
 
