@@ -1,0 +1,13 @@
+# Build outputs
+backend/target/
+frontend/node_modules/
+frontend/.angular/
+frontend/dist/
+
+# IDE files
+.vscode/
+.idea/
+*.iml
+
+# Runtime logs
+*.log
