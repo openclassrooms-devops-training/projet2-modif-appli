@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
+import java.util.function.Function;
 
 @Service
 public class JwtService {
@@ -28,6 +29,23 @@ public class JwtService {
                 .expiration(new Date(now.getTime() + expirationMs))
                 .signWith(key)
                 .compact();
+    }
+
+    public String extractUsername(String token) {
+        return extractClaim(token, claims -> claims.getSubject());
+    }
+
+    public boolean isTokenValid(String token, UserDetails userDetails) {
+        return userDetails.getUsername().equals(extractUsername(token)) && !isTokenExpired(token);
+    }
+
+    private boolean isTokenExpired(String token) {
+        return extractClaim(token, claims -> claims.getExpiration()).before(new Date());
+    }
+
+    private <T> T extractClaim(String token, Function<io.jsonwebtoken.Claims, T> resolver) {
+        return resolver.apply(Jwts.parser().verifyWith(Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8)))
+                .build().parseSignedClaims(token).getPayload());
     }
 
 }

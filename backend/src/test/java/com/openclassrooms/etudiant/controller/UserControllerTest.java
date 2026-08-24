@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.openclassrooms.etudiant.dto.RegisterDTO;
 import com.openclassrooms.etudiant.dto.LoginRequestDTO;
 import com.openclassrooms.etudiant.entities.User;
+import com.openclassrooms.etudiant.dto.StudentRequestDTO;
+import com.openclassrooms.etudiant.repository.StudentRepository;
 import com.openclassrooms.etudiant.repository.UserRepository;
 import com.openclassrooms.etudiant.service.UserService;
 import org.junit.jupiter.api.AfterEach;
@@ -15,9 +17,10 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-import org.testcontainers.containers.MySQLContainer;
+import org.testcontainers.mysql.MySQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
@@ -44,6 +47,8 @@ public class UserControllerTest {
     @Autowired
     private UserRepository userRepository;
     @Autowired
+    private StudentRepository studentRepository;
+    @Autowired
     private ObjectMapper objectMapper;
     @Autowired
     private MockMvc mockMvc;
@@ -60,6 +65,7 @@ public class UserControllerTest {
     @AfterEach
     public void afterEach() {
         userRepository.deleteAll();
+        studentRepository.deleteAll();
     }
 
     @Test
@@ -156,4 +162,63 @@ public class UserControllerTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isUnauthorized());
     }
+
+            @Test
+            public void studentsAreNotAccessibleWithoutAuthentication() throws Exception {
+            mockMvc.perform(MockMvcRequestBuilders.get("/api/students"))
+                .andExpect(MockMvcResultMatchers.status().isUnauthorized());
+            }
+
+            @Test
+            public void studentCrudWorksWithValidToken() throws Exception {
+            String token = authenticateUser();
+            StudentRequestDTO request = new StudentRequestDTO();
+            request.setFirstName("Alice");
+            request.setLastName("Martin");
+            request.setEmail("alice@example.com");
+
+            MvcResult createResult = mockMvc.perform(MockMvcRequestBuilders.post("/api/students")
+                    .header("Authorization", "Bearer " + token)
+                    .content(objectMapper.writeValueAsString(request))
+                    .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isCreated())
+                .andReturn();
+            long studentId = objectMapper.readTree(createResult.getResponse().getContentAsString()).get("id").asLong();
+
+            mockMvc.perform(MockMvcRequestBuilders.get("/api/students/{id}", studentId)
+                    .header("Authorization", "Bearer " + token))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.email").value("alice@example.com"));
+
+            request.setEmail("alicia@example.com");
+            mockMvc.perform(MockMvcRequestBuilders.put("/api/students/{id}", studentId)
+                    .header("Authorization", "Bearer " + token)
+                    .content(objectMapper.writeValueAsString(request))
+                    .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isOk());
+
+            mockMvc.perform(MockMvcRequestBuilders.delete("/api/students/{id}", studentId)
+                    .header("Authorization", "Bearer " + token))
+                .andExpect(MockMvcResultMatchers.status().isNoContent());
+            }
+
+            private String authenticateUser() throws Exception {
+            User user = new User();
+            user.setFirstName(FIRST_NAME);
+            user.setLastName(LAST_NAME);
+            user.setLogin("student-test-user");
+            user.setPassword(PASSWORD);
+            userService.register(user);
+
+            LoginRequestDTO loginRequestDTO = new LoginRequestDTO();
+            loginRequestDTO.setLogin("student-test-user");
+            loginRequestDTO.setPassword(PASSWORD);
+
+            MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post(LOGIN_URL)
+                    .content(objectMapper.writeValueAsString(loginRequestDTO))
+                    .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andReturn();
+            return result.getResponse().getContentAsString();
+            }
 }

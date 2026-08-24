@@ -77,6 +77,18 @@ La configuration [frontend/proxy.conf.json](frontend/proxy.conf.json) redirige l
 - Swagger UI : http://localhost:8080/swagger-ui/index.html
 - Spécification OpenAPI JSON : http://localhost:8080/v3/api-docs
 
+### API étudiants
+
+Les routes suivantes sont protégées par un Bearer Token JWT :
+
+| Méthode | Route | Action |
+|---|---|---|
+| `POST` | `/api/students` | Ajouter un étudiant |
+| `GET` | `/api/students` | Consulter la liste |
+| `GET` | `/api/students/{id}` | Consulter le détail |
+| `PUT` | `/api/students/{id}` | Modifier un étudiant |
+| `DELETE` | `/api/students/{id}` | Supprimer un étudiant |
+
 ## Tester l'API avec Swagger
 
 Dans Swagger UI :
@@ -113,6 +125,8 @@ mvn test
 
 Les tests d'intégration utilisent Testcontainers et nécessitent que Docker Desktop soit démarré.
 
+> **Note (résolu le 24/08/2026)** : sur ce projet, `UserControllerTest` échouait avec `Could not find a valid Docker environment` alors que `docker ps`/`docker info` fonctionnaient normalement. La cause n'était pas Docker Desktop, mais l'ancienne version **Testcontainers 1.20.0**, incompatible avec l'API Docker Desktop récente. Correction : mise à niveau vers **Testcontainers 2.0.5**, avec les nouveaux noms d'artefacts introduits en 2.x (`testcontainers-junit-jupiter` au lieu de `junit-jupiter`, `testcontainers-mysql` au lieu de `mysql`) et le nouveau package `org.testcontainers.mysql.MySQLContainer` (au lieu de `org.testcontainers.containers.MySQLContainer`). Après cette mise à niveau, `mvn test` passe normalement (`17/17` tests), sans configuration Docker particulière.
+
 ### Frontend
 
 ```powershell
@@ -146,6 +160,8 @@ git push
 
 - [Analyse initiale](doc/analyse-projet.md)
 - [Étape 2 : authentification et Swagger](doc/etape02-auth-api.md)
+- [Étape 3 : écran de connexion frontend](doc/etape03-login-frontend.md)
+- [Étape 4 : CRUD étudiants backend](doc/etape04-crud-etudiants-backend.md)
 - [Guide détaillé du backend](backend/README.md)
 - [Guide Angular](frontend/README.md)
 
