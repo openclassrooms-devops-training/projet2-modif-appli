@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
+import { provideRouter, Router } from '@angular/router';
 import { of, throwError } from 'rxjs';
 
 import { LoginComponent } from './login.component';
@@ -21,6 +22,7 @@ describe('LoginComponent', () => {
       imports: [LoginComponent],
       providers: [
         provideHttpClient(),
+        provideRouter([]),
         { provide: UserService, useValue: userServiceMock }
       ]
     }).compileComponents();
@@ -38,15 +40,16 @@ describe('LoginComponent', () => {
     expect(userServiceMock.login).not.toHaveBeenCalled();
   });
 
-  it('should store the token after a successful login', () => {
+  it('should store the token and redirect after a successful login', () => {
     userServiceMock.login.mockReturnValue(of('jwt-token'));
+    const navigateSpy = jest.spyOn(TestBed.inject(Router), 'navigate');
     component.loginForm.setValue({ login: 'alice', password: 'password' });
 
     component.onSubmit();
 
     expect(userServiceMock.login).toHaveBeenCalledWith({ login: 'alice', password: 'password' });
     expect(localStorage.getItem('authToken')).toBe('jwt-token');
-    expect(component.successMessage).toBe('Connexion réussie.');
+    expect(navigateSpy).toHaveBeenCalledWith(['/students']);
     expect(component.loading).toBe(false);
   });
 

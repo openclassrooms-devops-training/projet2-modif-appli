@@ -73,6 +73,7 @@ La configuration [frontend/proxy.conf.json](frontend/proxy.conf.json) redirige l
 - Accueil : http://localhost:4200/
 - Connexion : http://localhost:4200/login
 - Formulaire d'inscription : http://localhost:4200/register
+- Gestion des étudiants (connexion requise) : http://localhost:4200/students
 - API backend : http://localhost:8080
 - Swagger UI : http://localhost:8080/swagger-ui/index.html
 - Spécification OpenAPI JSON : http://localhost:8080/v3/api-docs
@@ -112,7 +113,15 @@ Dans Swagger UI :
 
 Les endpoints d'inscription et de connexion sont publics. Les autres routes nécessitent une authentification, même si le filtre JWT et les routes métier restent à compléter dans les prochaines étapes.
 
-Le formulaire frontend de connexion est disponible sur `/login`. Après une réponse réussie, le token est stocké localement sous la clé `authToken` pour préparer l'ajout d'un intercepteur HTTP et d'un guard dans une prochaine étape.
+Le formulaire frontend de connexion est disponible sur `/login`. Après une réponse réussie, le token est stocké localement sous la clé `authToken`.
+
+Depuis l'étape 5, le frontend consomme entièrement les APIs étudiants :
+
+- l'inscription réussie affiche une card de confirmation puis redirige vers `/login` ;
+- la connexion réussie redirige automatiquement vers `/students` ;
+- toutes les requêtes vers `/api/**` reçoivent automatiquement l'en-tête `Authorization: Bearer <token>` grâce à un intercepteur HTTP ;
+- la route `/students` est protégée par un guard Angular : sans token, l'utilisateur est renvoyé vers `/login` ;
+- une barre de menu permanente donne accès à Étudiants, Inscription, Déconnexion, et un lien Swagger visible uniquement lorsque l'application tourne en mode développement (`isDevMode()`).
 
 ## Tests
 
@@ -162,6 +171,7 @@ git push
 - [Étape 2 : authentification et Swagger](doc/etape02-auth-api.md)
 - [Étape 3 : écran de connexion frontend](doc/etape03-login-frontend.md)
 - [Étape 4 : CRUD étudiants backend](doc/etape04-crud-etudiants-backend.md)
+- [Étape 5 : écrans CRUD étudiants et navigation](doc/etape05-crud-etudiants-frontend.md)
 - [Guide détaillé du backend](backend/README.md)
 - [Guide Angular](frontend/README.md)
 

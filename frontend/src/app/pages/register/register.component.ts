@@ -5,6 +5,7 @@ import { MaterialModule } from '../../shared/material.module';
 import { UserService } from '../../core/service/user.service';
 import { Register } from '../../core/models/Register';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-register',
@@ -17,8 +18,11 @@ export class RegisterComponent implements OnInit {
   private userService = inject(UserService);
   private formBuilder = inject(FormBuilder);
   private destroyRef = inject(DestroyRef);
+  private router = inject(Router);
   registerForm: FormGroup = new FormGroup({});
   submitted: boolean = false;
+  registrationSuccess = false;
+  errorMessage = '';
 
   ngOnInit() {
     this.registerForm = this.formBuilder.group(
@@ -37,6 +41,7 @@ export class RegisterComponent implements OnInit {
 
   onSubmit(): void {
     this.submitted = true;
+    this.errorMessage = '';
     if (this.registerForm.invalid) {
       return;
     }
@@ -48,16 +53,25 @@ export class RegisterComponent implements OnInit {
     };
     this.userService.register(registerUser)
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(
-      () => {
-        alert('SUCCESS!! :-)');
-        // TODO : router l'utilisateur vers la page de login
-      },
-    );
+      .subscribe({
+        next: () => {
+          this.registrationSuccess = true;
+          this.registerForm.reset();
+        },
+        error: () => {
+          this.errorMessage = 'Impossible de créer ce compte. Vérifiez le login choisi.';
+        }
+      });
   }
 
   onReset(): void {
     this.submitted = false;
+    this.registrationSuccess = false;
+    this.errorMessage = '';
     this.registerForm.reset();
+  }
+
+  goToLogin(): void {
+    this.router.navigate(['/login']);
   }
 }

@@ -1,0 +1,71 @@
+.students-page {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 3.5rem 2rem 4rem;
+}
+
+.page-heading {
+  border-bottom: 1px solid #c8c3b8;
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+}
+
+.eyebrow, .section-label {
+  color: #8b1e2d;
+  font-size: .72rem;
+  font-weight: 700;
+  letter-spacing: .08em;
+  margin: 0 0 .45rem;
+  text-transform: uppercase;
+}
+
+h1, h2, p { margin-top: 0; }
+h1 { color: #1e2830; font-family: Georgia, serif; font-size: clamp(2.2rem, 5vw, 4rem); font-weight: 500; margin-bottom: .5rem; }
+h2 { color: #1e2830; font-family: Georgia, serif; font-size: 1.45rem; font-weight: 500; margin-bottom: 1.4rem; }
+.page-heading > p:last-child { color: #59636a; font-size: 1rem; }
+
+.workspace-grid { display: grid; gap: 1.5rem; grid-template-columns: minmax(0, 1.35fr) minmax(300px, .65fr); }
+.panel { background: #fffdf8; border: 1px solid #d8d1c4; box-shadow: 0 10px 24px rgba(40, 42, 35, .07); padding: 1.5rem; }
+.panel-heading { align-items: start; display: flex; justify-content: space-between; }
+.panel-heading h2 { margin-bottom: 1rem; }
+.count { align-items: center; background: #1f4b46; border-radius: 50%; color: white; display: flex; font-weight: 700; height: 2rem; justify-content: center; width: 2rem; }
+.student-list { border-top: 1px solid #e1dbd0; }
+.student-row { align-items: center; border-bottom: 1px solid #e1dbd0; display: flex; gap: 1rem; justify-content: space-between; padding: .85rem 0; }
+.student-row.selected { background: #f1eee5; margin: 0 -.75rem; padding-left: .75rem; padding-right: .75rem; }
+.student-summary { align-items: center; background: none; border: 0; color: #1e2830; cursor: pointer; display: flex; gap: .75rem; min-width: 0; padding: 0; text-align: left; }
+.student-summary strong, .student-summary small { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.student-summary small { color: #687177; margin-top: .2rem; }
+.initials { align-items: center; background: #d8b26e; border-radius: 50%; color: #1e2830; display: flex; flex: 0 0 2.4rem; font-family: Georgia, serif; font-size: .9rem; height: 2.4rem; justify-content: center; }
+.row-actions { display: flex; gap: .7rem; }
+.text-button { background: none; border: 0; color: #1f4b46; cursor: pointer; font-weight: 700; padding: .3rem 0; }
+.text-button:hover { color: #8b1e2d; }
+.danger-text { color: #8b1e2d; }
+.empty-state { color: #687177; padding: 2rem 0; }
+
+form { display: flex; flex-direction: column; }
+label { color: #38444a; font-size: .86rem; font-weight: 700; margin: .75rem 0 .35rem; }
+input { background: #fff; border: 1px solid #bdb7ac; border-radius: 2px; box-sizing: border-box; color: #1e2830; font: inherit; padding: .75rem; width: 100%; }
+input:focus { border-color: #1f4b46; box-shadow: 0 0 0 3px rgba(31, 75, 70, .14); outline: 0; }
+input.invalid { border-color: #8b1e2d; }
+.field-error { color: #8b1e2d; font-size: .78rem; margin-top: .3rem; }
+.form-actions { display: flex; gap: .7rem; margin-top: 1.5rem; }
+.primary-button, .secondary-button { border: 0; border-radius: 2px; cursor: pointer; font-weight: 700; padding: .75rem 1rem; }
+.primary-button { background: #1f4b46; color: #fff; }
+.primary-button:hover { background: #173a36; }
+.primary-button:disabled { cursor: wait; opacity: .6; }
+.secondary-button { background: #e5e0d6; color: #38444a; }
+.notice { border-left: 4px solid; margin: 1rem 0; padding: .75rem 1rem; }
+.notice.error { background: #f8e8e7; border-color: #8b1e2d; color: #72202a; }
+.notice.success { background: #e6f0e9; border-color: #1f4b46; color: #1f4b46; }
+.detail-strip { align-items: center; background: #1e2830; color: #f8f4eb; display: flex; justify-content: space-between; margin-top: 1.5rem; padding: 1.25rem 1.5rem; }
+.detail-strip h2 { color: #fff; margin-bottom: 0; }
+.detail-strip .section-label { color: #d8b26e; }
+.detail-strip p:last-child { margin-bottom: 0; }
+
+@media (max-width: 760px) {
+  .students-page { padding: 2rem 1rem 3rem; }
+  .workspace-grid { grid-template-columns: 1fr; }
+  .student-row { align-items: flex-start; flex-direction: column; }
+  .row-actions { padding-left: 3.15rem; }
+  .detail-strip { align-items: flex-start; flex-direction: column; gap: .75rem; }
+}

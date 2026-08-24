@@ -6,6 +6,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MaterialModule } from '../../shared/material.module';
 import { Login } from '../../core/models/Login';
 import { UserService } from '../../core/service/user.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-login',
@@ -18,6 +19,7 @@ export class LoginComponent implements OnInit {
   private readonly userService = inject(UserService);
   private readonly formBuilder = inject(FormBuilder);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly router = inject(Router);
 
   loginForm: FormGroup = new FormGroup({});
   submitted = false;
@@ -57,7 +59,7 @@ export class LoginComponent implements OnInit {
         next: (token) => {
           localStorage.setItem('authToken', token);
           this.loading = false;
-          this.successMessage = 'Connexion réussie.';
+          this.router.navigate(['/students']);
         },
         error: (error: HttpErrorResponse) => {
           this.loading = false;

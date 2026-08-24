@@ -1,0 +1,21 @@
+.site-header {
+	align-items: center;
+	background: #1e2830;
+	border-bottom: 4px solid #d8b26e;
+	color: #f8f4eb;
+	display: flex;
+	justify-content: space-between;
+	padding: .8rem 2rem;
+}
+
+.brand, nav { align-items: center; display: flex; }
+.brand { color: #fff; font-family: Georgia, serif; font-size: 1.15rem; gap: .65rem; text-decoration: none; }
+.brand-mark { align-items: center; background: #8b1e2d; border-radius: 50%; display: flex; font-style: italic; height: 2rem; justify-content: center; width: 2rem; }
+nav { gap: 1.2rem; }
+nav a, .logout-button { background: none; border: 0; color: #dfe5e4; cursor: pointer; font: inherit; font-size: .85rem; text-decoration: none; }
+nav a:hover, nav a.active, .logout-button:hover { color: #d8b26e; }
+
+@media (max-width: 760px) {
+	.site-header { align-items: flex-start; flex-direction: column; gap: .8rem; padding: .8rem 1rem; }
+	nav { flex-wrap: wrap; gap: .7rem 1rem; }
+}

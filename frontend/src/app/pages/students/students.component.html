@@ -1,0 +1,83 @@
+<section class="students-page">
+  <header class="page-heading">
+    <p class="eyebrow">EtuBibliothèque · Registre</p>
+    <h1>Étudiants abonnés</h1>
+    <p>Gérez les inscriptions de la bibliothèque avec précision.</p>
+  </header>
+
+  @if (errorMessage) {
+    <div class="notice error" role="alert">{{ errorMessage }}</div>
+  }
+  @if (successMessage) {
+    <div class="notice success" role="status">{{ successMessage }}</div>
+  }
+
+  <div class="workspace-grid">
+    <section class="panel directory-panel">
+      <div class="panel-heading">
+        <div>
+          <p class="section-label">Annuaire</p>
+          <h2>Liste des étudiants</h2>
+        </div>
+        <span class="count">{{ students.length }}</span>
+      </div>
+
+      @if (loading && students.length === 0) {
+        <p class="empty-state">Chargement de l’annuaire...</p>
+      } @else if (students.length === 0) {
+        <p class="empty-state">Aucun étudiant enregistré.</p>
+      } @else {
+        <div class="student-list">
+          @for (student of students; track student.id) {
+            <article class="student-row" [class.selected]="selectedStudent?.id === student.id">
+              <button class="student-summary" type="button" (click)="selectStudent(student)">
+                <span class="initials">{{ student.firstName.charAt(0) }}{{ student.lastName.charAt(0) }}</span>
+                <span>
+                  <strong>{{ student.firstName }} {{ student.lastName }}</strong>
+                  <small>{{ student.email }}</small>
+                </span>
+              </button>
+              <div class="row-actions">
+                <button type="button" class="text-button" (click)="editStudent(student)">Modifier</button>
+                <button type="button" class="text-button danger-text" (click)="deleteStudent(student)">Supprimer</button>
+              </div>
+            </article>
+          }
+        </div>
+      }
+    </section>
+
+    <section class="panel form-panel">
+      <p class="section-label">{{ editingId === null ? 'Nouvelle fiche' : 'Fiche en édition' }}</p>
+      <h2>{{ editingId === null ? 'Ajouter un étudiant' : 'Modifier l’étudiant' }}</h2>
+      <form [formGroup]="studentForm" (ngSubmit)="onSubmit()" novalidate>
+        <label for="firstName">Prénom</label>
+        <input id="firstName" type="text" formControlName="firstName" [class.invalid]="submitted && form['firstName'].errors" />
+        @if (submitted && form['firstName'].errors) { <span class="field-error">Le prénom est obligatoire.</span> }
+
+        <label for="lastName">Nom</label>
+        <input id="lastName" type="text" formControlName="lastName" [class.invalid]="submitted && form['lastName'].errors" />
+        @if (submitted && form['lastName'].errors) { <span class="field-error">Le nom est obligatoire.</span> }
+
+        <label for="email">Adresse e-mail</label>
+        <input id="email" type="email" formControlName="email" [class.invalid]="submitted && form['email'].errors" />
+        @if (submitted && form['email'].errors) { <span class="field-error">Une adresse e-mail valide est obligatoire.</span> }
+
+        <div class="form-actions">
+          <button class="primary-button" type="submit" [disabled]="loading">{{ editingId === null ? 'Ajouter' : 'Enregistrer' }}</button>
+          @if (editingId !== null) { <button class="secondary-button" type="button" (click)="cancelEdit()">Annuler</button> }
+        </div>
+      </form>
+    </section>
+  </div>
+
+  @if (selectedStudent) {
+    <section class="detail-strip">
+      <div>
+        <p class="section-label">Détail sélectionné</p>
+        <h2>{{ selectedStudent.firstName }} {{ selectedStudent.lastName }}</h2>
+      </div>
+      <p>{{ selectedStudent.email }}</p>
+    </section>
+  }
+</section>
