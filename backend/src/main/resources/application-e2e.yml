@@ -1,0 +1,16 @@
+spring:
+  docker:
+    compose:
+      enabled: false
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: ${DB_USER:etudiant_e2e}
+    password: ${DB_PASSWORD:etudiant_e2e}
+    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3307}/${DB_NAME:etudiant_e2e}
+
+jwt:
+  secret: ${JWT_SECRET:9AF15303B8CD41F98B4EB5A9A9A927E9EDD5C0A2E8BF9AB77BCA2C86C88E6ED}
+  expiration-ms: ${JWT_EXPIRATION_MS:3600000}

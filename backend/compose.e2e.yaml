@@ -1,0 +1,17 @@
+services:
+  mysql-e2e:
+    image: mysql:latest
+    environment:
+      MYSQL_DATABASE: etudiant_e2e
+      MYSQL_USER: etudiant_e2e
+      MYSQL_PASSWORD: etudiant_e2e
+      MYSQL_ROOT_PASSWORD: root_password
+    ports:
+      - "3307:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot_password"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    tmpfs:
+      - /var/lib/mysql

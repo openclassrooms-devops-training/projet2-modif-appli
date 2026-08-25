@@ -32,7 +32,7 @@
         <div class="form-group col-5">
           <label>Last Name</label>
           <input
-            type="password"
+            type="text"
             formControlName="lastName"
             class="form-control"
             [ngClass]="{ 'is-invalid': submitted && form['lastName'].errors }"
@@ -69,7 +69,7 @@
       <div class="form-group">
         <label>Password</label>
         <input
-          type="text"
+          type="password"
           formControlName="password"
           class="form-control"
           [ngClass]="{ 'is-invalid': submitted && form['password'].errors }"
@@ -83,7 +83,7 @@
         }
       </div>
       <div class="text-center">
-        <button class="btn btn-primary mr-1">Register</button>
+        <button class="btn btn-primary mr-1" type="submit">Register</button>
         <button class="btn btn-secondary" type="reset" (click)="onReset()">
           Cancel
         </button>

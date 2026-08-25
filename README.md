@@ -132,6 +132,13 @@ cd backend
 mvn test
 ```
 
+Pour exécuter uniquement les tests unitaires backend :
+
+```powershell
+cd backend
+mvn "-Dtest=UserServiceTest,StudentServiceTest,JwtServiceTest" test
+```
+
 Les tests d'intégration utilisent Testcontainers et nécessitent que Docker Desktop soit démarré.
 
 > **Note (résolu le 24/08/2026)** : sur ce projet, `UserControllerTest` échouait avec `Could not find a valid Docker environment` alors que `docker ps`/`docker info` fonctionnaient normalement. La cause n'était pas Docker Desktop, mais l'ancienne version **Testcontainers 1.20.0**, incompatible avec l'API Docker Desktop récente. Correction : mise à niveau vers **Testcontainers 2.0.5**, avec les nouveaux noms d'artefacts introduits en 2.x (`testcontainers-junit-jupiter` au lieu de `junit-jupiter`, `testcontainers-mysql` au lieu de `mysql`) et le nouveau package `org.testcontainers.mysql.MySQLContainer` (au lieu de `org.testcontainers.containers.MySQLContainer`). Après cette mise à niveau, `mvn test` passe normalement (`17/17` tests), sans configuration Docker particulière.
@@ -141,6 +148,36 @@ Les tests d'intégration utilisent Testcontainers et nécessitent que Docker Des
 ```powershell
 cd frontend
 npm test
+```
+
+Depuis la racine du monorepo, la même suite Jest peut être exécutée ainsi :
+
+```powershell
+npm --prefix frontend test -- --watch=false --runInBand
+```
+
+### Tests E2E Cypress
+
+Les tests Cypress nécessitent que le frontend et le backend soient démarrés. Pour utiliser la base E2E dédiée, consulter [la fiche récapitulative des tests](doc/etape-03-04-05-test.md), puis lancer Cypress depuis la racine :
+
+```powershell
+# Mode headless, sans fenêtre de navigateur
+npm --prefix frontend run e2e
+
+# Mode headed, avec une fenêtre Electron visible
+npm --prefix frontend run e2e -- --headed
+
+# Mode headed avec Google Chrome
+npm --prefix frontend run e2e -- --headed --browser chrome
+
+# Interface graphique Cypress
+npm --prefix frontend run e2e:open
+```
+
+Après un scénario E2E, supprimer la base de test dédiée avec :
+
+```powershell
+.\scripts\e2e-clean.ps1
 ```
 
 Le frontend utilise Jest. Des tests fonctionnels complémentaires seront ajoutés au fil des étapes.
@@ -211,7 +248,9 @@ La prochaine évolution Docker devrait donc ajouter des `Dockerfile` pour le bac
 
 ## Points de vigilance
 
-- Ne pas utiliser les credentials présents dans `backend/.env` en production.
+- Ne pas utiliser les credentials présents dans `backend/.env` en production : ils sont réservés au développement local.
 - Le secret JWT doit être fourni par un mécanisme de secrets et ne doit pas être exposé dans un dépôt public.
-- Le filtre de validation des tokens JWT reste à implémenter avant de protéger les futures routes métier.
-- Le CRUD des étudiants et l'interface de connexion restent à développer.
+- Le filtre JWT protège maintenant les routes CRUD étudiants ; les règles de rôles et permissions restent à définir.
+- Le CRUD étudiants et l'interface de connexion sont implémentés et couverts par des tests ; la pagination et la recherche restent à développer.
+- Les tests E2E utilisent une base MySQL dédiée via `backend/compose.e2e.yaml` ; ne pas les exécuter contre une base de production.
+- Pour un déploiement, il reste à construire les images Docker du backend et du frontend.
