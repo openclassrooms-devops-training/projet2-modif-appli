@@ -16,6 +16,9 @@ describe('UserService', () => {
   });
 
   it('should be created', () => {
+    // Arrange & Act: the service is instantiated in beforeEach via DI
+
+    // Assert
     expect(service).toBeTruthy();
   });
 });

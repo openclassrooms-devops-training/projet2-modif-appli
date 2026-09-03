@@ -27,24 +27,24 @@ public class UserController {
     private final UserDtoMapper userDtoMapper;
 
     @PostMapping("/api/register")
-        @Operation(summary = "Inscrire un agent", description = "Crée un compte agent et chiffre son mot de passe.")
-        @ApiResponses({
-            @ApiResponse(responseCode = "201", description = "Agent créé"),
-            @ApiResponse(responseCode = "400", description = "Données invalides ou login déjà utilisé")
-        })
+    @Operation(summary = "Inscrire un agent", description = "Crée un compte agent et chiffre son mot de passe.")
+    @ApiResponses({
+        @ApiResponse(responseCode = "201", description = "Agent créé"),
+        @ApiResponse(responseCode = "400", description = "Données invalides ou login déjà utilisé")
+    })
     public ResponseEntity<?> register(@Valid @RequestBody RegisterDTO registerDTO) {
         userService.register(userDtoMapper.toEntity(registerDTO));
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @PostMapping("/api/login")
-        @Operation(summary = "Authentifier un agent", description = "Vérifie les identifiants et retourne un token JWT.")
-        @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Authentification réussie"),
-            @ApiResponse(responseCode = "400", description = "Données de connexion invalides"),
-            @ApiResponse(responseCode = "401", description = "Identifiants incorrects")
-        })
-        public ResponseEntity<?> login(@Valid @RequestBody LoginRequestDTO loginRequestDTO) {
+    @Operation(summary = "Authentifier un agent", description = "Vérifie les identifiants et retourne un token JWT.")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Authentification réussie"),
+        @ApiResponse(responseCode = "400", description = "Données de connexion invalides"),
+        @ApiResponse(responseCode = "401", description = "Identifiants incorrects")
+    })
+    public ResponseEntity<?> login(@Valid @RequestBody LoginRequestDTO loginRequestDTO) {
         String jwtToken = userService.login(loginRequestDTO.getLogin(), loginRequestDTO.getPassword());
         return ResponseEntity.ok(jwtToken);
     }

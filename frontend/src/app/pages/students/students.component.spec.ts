@@ -34,23 +34,30 @@ describe('StudentsComponent', () => {
   });
 
   it('loads the student list on initialization', () => {
+    // Arrange & Act: ngOnInit already called loadStudents() via fixture.detectChanges() above
+
+    // Assert
     expect(studentServiceMock.findAll).toHaveBeenCalledTimes(1);
     expect(component.students).toEqual([]);
   });
 
   it('creates a student from a valid form and reloads the list', () => {
+    // Arrange
     const student = { firstName: 'Alice', lastName: 'Martin', email: 'alice@example.com' };
     studentServiceMock.create.mockReturnValue(of({ id: 1, ...student }));
     component.studentForm.setValue(student);
 
+    // Act
     component.onSubmit();
 
+    // Assert
     expect(studentServiceMock.create).toHaveBeenCalledWith(student);
     expect(component.successMessage).toBe('Étudiant ajouté.');
     expect(studentServiceMock.findAll).toHaveBeenCalledTimes(2);
   });
 
   it('updates the selected student', () => {
+    // Arrange
     const student = { id: 1, firstName: 'Alice', lastName: 'Martin', email: 'alice@example.com' };
     const updated = { firstName: 'Alicia', lastName: 'Martin', email: 'alicia@example.com' };
     component.students = [student];
@@ -58,28 +65,37 @@ describe('StudentsComponent', () => {
     studentServiceMock.update.mockReturnValue(of({ id: 1, ...updated }));
     component.studentForm.setValue(updated);
 
+    // Act
     component.onSubmit();
 
+    // Assert
     expect(studentServiceMock.update).toHaveBeenCalledWith(1, updated);
     expect(component.successMessage).toBe('Étudiant modifié.');
   });
 
   it('deletes a student after confirmation', () => {
+    // Arrange
     const student = { id: 1, firstName: 'Alice', lastName: 'Martin', email: 'alice@example.com' };
     component.students = [student];
     studentServiceMock.delete.mockReturnValue(of(void 0));
     jest.spyOn(window, 'confirm').mockReturnValue(true);
 
+    // Act
     component.deleteStudent(student);
 
+    // Assert
     expect(studentServiceMock.delete).toHaveBeenCalledWith(1);
     expect(component.successMessage).toBe('Étudiant supprimé.');
   });
 
   it('displays an error when loading students fails', () => {
+    // Arrange
     studentServiceMock.findAll.mockReturnValue(throwError(() => new Error('network')));
+
+    // Act
     component.loadStudents();
 
+    // Assert
     expect(component.errorMessage).toBe('Impossible de charger les étudiants.');
   });
 });

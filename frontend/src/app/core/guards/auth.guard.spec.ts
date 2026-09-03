@@ -14,16 +14,23 @@ describe('authGuard', () => {
   });
 
   it('allows access when a token exists', () => {
+    // Arrange
     localStorage.setItem('authToken', 'jwt-token');
 
+    // Act
     const result = TestBed.runInInjectionContext(() => authGuard({} as never, {} as never));
 
+    // Assert
     expect(result).toBe(true);
   });
 
   it('returns a login UrlTree when no token exists', () => {
+    // Arrange: no token in localStorage (cleared in beforeEach)
+
+    // Act
     const result = TestBed.runInInjectionContext(() => authGuard({} as never, {} as never));
 
+    // Assert
     expect(result).toEqual(TestBed.inject(Router).createUrlTree(['/login']));
   });
 });

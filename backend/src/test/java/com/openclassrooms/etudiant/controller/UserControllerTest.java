@@ -70,21 +70,23 @@ public class UserControllerTest {
 
     @Test
     public void registerUserWithoutRequiredData() throws Exception {
-        // GIVEN
+        // Arrange
         RegisterDTO registerDTO = new RegisterDTO();
 
-        // WHEN
-        mockMvc.perform(MockMvcRequestBuilders.post(URL)
+        // Act
+        var result = mockMvc.perform(MockMvcRequestBuilders.post(URL)
                         .content(objectMapper.writeValueAsString(registerDTO))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
-                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+                .andDo(print());
+
+        // Assert
+        result.andExpect(MockMvcResultMatchers.status().isBadRequest());
     }
 
     @Test
     public void registerAlreadyExistUser() throws Exception {
-        // GIVEN
+        // Arrange
         User user = new User();
         user.setFirstName(FIRST_NAME);
         user.setLastName(LAST_NAME);
@@ -98,35 +100,40 @@ public class UserControllerTest {
         registerDTO.setLogin(LOGIN);
         registerDTO.setPassword(PASSWORD);
 
-        // WHEN
-        mockMvc.perform(MockMvcRequestBuilders.post(URL)
+        // Act
+        var result = mockMvc.perform(MockMvcRequestBuilders.post(URL)
                         .content(objectMapper.writeValueAsString(registerDTO))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
-                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+                .andDo(print());
+
+        // Assert
+        result.andExpect(MockMvcResultMatchers.status().isBadRequest());
     }
 
     @Test
     public void registerUserSuccessful() throws Exception {
-        // GIVEN
+        // Arrange
         RegisterDTO registerDTO = new RegisterDTO();
         registerDTO.setFirstName(FIRST_NAME);
         registerDTO.setLastName(LAST_NAME);
         registerDTO.setLogin(LOGIN);
         registerDTO.setPassword(PASSWORD);
 
-        // WHEN
-        mockMvc.perform(MockMvcRequestBuilders.post(URL)
+        // Act
+        var result = mockMvc.perform(MockMvcRequestBuilders.post(URL)
                         .content(objectMapper.writeValueAsString(registerDTO))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
-                .andExpect(MockMvcResultMatchers.status().isCreated());
+                .andDo(print());
+
+        // Assert
+        result.andExpect(MockMvcResultMatchers.status().isCreated());
     }
 
     @Test
     public void loginWithValidCredentialsReturnsToken() throws Exception {
+        // Arrange
         User user = new User();
         user.setFirstName(FIRST_NAME);
         user.setLastName(LAST_NAME);
@@ -138,14 +145,18 @@ public class UserControllerTest {
         loginRequestDTO.setLogin(LOGIN);
         loginRequestDTO.setPassword(PASSWORD);
 
-        mockMvc.perform(MockMvcRequestBuilders.post(LOGIN_URL)
+        // Act
+        var result = mockMvc.perform(MockMvcRequestBuilders.post(LOGIN_URL)
                         .content(objectMapper.writeValueAsString(loginRequestDTO))
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.status().isOk());
+                        .contentType(MediaType.APPLICATION_JSON));
+
+        // Assert
+        result.andExpect(MockMvcResultMatchers.status().isOk());
     }
 
     @Test
     public void loginWithWrongPasswordReturnsUnauthorized() throws Exception {
+        // Arrange
         User user = new User();
         user.setFirstName(FIRST_NAME);
         user.setLastName(LAST_NAME);
@@ -157,68 +168,83 @@ public class UserControllerTest {
         loginRequestDTO.setLogin(LOGIN);
         loginRequestDTO.setPassword("wrong-password");
 
-        mockMvc.perform(MockMvcRequestBuilders.post(LOGIN_URL)
+        // Act
+        var result = mockMvc.perform(MockMvcRequestBuilders.post(LOGIN_URL)
                         .content(objectMapper.writeValueAsString(loginRequestDTO))
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.status().isUnauthorized());
+                        .contentType(MediaType.APPLICATION_JSON));
+
+        // Assert
+        result.andExpect(MockMvcResultMatchers.status().isUnauthorized());
     }
 
-            @Test
-            public void studentsAreNotAccessibleWithoutAuthentication() throws Exception {
-            mockMvc.perform(MockMvcRequestBuilders.get("/api/students"))
-                .andExpect(MockMvcResultMatchers.status().isUnauthorized());
-            }
+    @Test
+    public void studentsAreNotAccessibleWithoutAuthentication() throws Exception {
+        // Arrange: no Authorization header is sent
 
-            @Test
-            public void studentCrudWorksWithValidToken() throws Exception {
-            String token = authenticateUser();
-            StudentRequestDTO request = new StudentRequestDTO();
-            request.setFirstName("Alice");
-            request.setLastName("Martin");
-            request.setEmail("alice@example.com");
+        // Act
+        var result = mockMvc.perform(MockMvcRequestBuilders.get("/api/students"));
 
-            MvcResult createResult = mockMvc.perform(MockMvcRequestBuilders.post("/api/students")
-                    .header("Authorization", "Bearer " + token)
-                    .content(objectMapper.writeValueAsString(request))
-                    .contentType(MediaType.APPLICATION_JSON))
+        // Assert
+        result.andExpect(MockMvcResultMatchers.status().isUnauthorized());
+    }
+
+    @Test
+    public void studentCrudWorksWithValidToken() throws Exception {
+        // Arrange
+        String token = authenticateUser();
+        StudentRequestDTO request = new StudentRequestDTO();
+        request.setFirstName("Alice");
+        request.setLastName("Martin");
+        request.setEmail("alice@example.com");
+
+        // Act: create the student
+        MvcResult createResult = mockMvc.perform(MockMvcRequestBuilders.post("/api/students")
+                        .header("Authorization", "Bearer " + token)
+                        .content(objectMapper.writeValueAsString(request))
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isCreated())
                 .andReturn();
-            long studentId = objectMapper.readTree(createResult.getResponse().getContentAsString()).get("id").asLong();
+        long studentId = objectMapper.readTree(createResult.getResponse().getContentAsString()).get("id").asLong();
 
-            mockMvc.perform(MockMvcRequestBuilders.get("/api/students/{id}", studentId)
-                    .header("Authorization", "Bearer " + token))
+        // Assert: the created student can be fetched back with its email
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/students/{id}", studentId)
+                        .header("Authorization", "Bearer " + token))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.email").value("alice@example.com"));
 
-            request.setEmail("alicia@example.com");
-            mockMvc.perform(MockMvcRequestBuilders.put("/api/students/{id}", studentId)
-                    .header("Authorization", "Bearer " + token)
-                    .content(objectMapper.writeValueAsString(request))
-                    .contentType(MediaType.APPLICATION_JSON))
+        // Act: update the student
+        request.setEmail("alicia@example.com");
+
+        // Assert: update succeeds
+        mockMvc.perform(MockMvcRequestBuilders.put("/api/students/{id}", studentId)
+                        .header("Authorization", "Bearer " + token)
+                        .content(objectMapper.writeValueAsString(request))
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isOk());
 
-            mockMvc.perform(MockMvcRequestBuilders.delete("/api/students/{id}", studentId)
-                    .header("Authorization", "Bearer " + token))
+        // Act & Assert: delete the student
+        mockMvc.perform(MockMvcRequestBuilders.delete("/api/students/{id}", studentId)
+                        .header("Authorization", "Bearer " + token))
                 .andExpect(MockMvcResultMatchers.status().isNoContent());
-            }
+    }
 
-            private String authenticateUser() throws Exception {
-            User user = new User();
-            user.setFirstName(FIRST_NAME);
-            user.setLastName(LAST_NAME);
-            user.setLogin("student-test-user");
-            user.setPassword(PASSWORD);
-            userService.register(user);
+    private String authenticateUser() throws Exception {
+        User user = new User();
+        user.setFirstName(FIRST_NAME);
+        user.setLastName(LAST_NAME);
+        user.setLogin("student-test-user");
+        user.setPassword(PASSWORD);
+        userService.register(user);
 
-            LoginRequestDTO loginRequestDTO = new LoginRequestDTO();
-            loginRequestDTO.setLogin("student-test-user");
-            loginRequestDTO.setPassword(PASSWORD);
+        LoginRequestDTO loginRequestDTO = new LoginRequestDTO();
+        loginRequestDTO.setLogin("student-test-user");
+        loginRequestDTO.setPassword(PASSWORD);
 
-            MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post(LOGIN_URL)
-                    .content(objectMapper.writeValueAsString(loginRequestDTO))
-                    .contentType(MediaType.APPLICATION_JSON))
+        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post(LOGIN_URL)
+                        .content(objectMapper.writeValueAsString(loginRequestDTO))
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andReturn();
-            return result.getResponse().getContentAsString();
-            }
+        return result.getResponse().getContentAsString();
+    }
 }

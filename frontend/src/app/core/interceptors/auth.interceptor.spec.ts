@@ -24,18 +24,25 @@ describe('authInterceptor', () => {
   afterEach(() => httpController.verify());
 
   it('adds the bearer token to API requests', () => {
+    // Arrange
     localStorage.setItem('authToken', 'jwt-token');
 
+    // Act
     httpClient.get('/api/students').subscribe();
 
+    // Assert
     const request = httpController.expectOne('/api/students');
     expect(request.request.headers.get('Authorization')).toBe('Bearer jwt-token');
     request.flush([]);
   });
 
   it('does not add a token when the user is not authenticated', () => {
+    // Arrange: no token in localStorage (cleared in beforeEach)
+
+    // Act
     httpClient.get('/api/students').subscribe();
 
+    // Assert
     const request = httpController.expectOne('/api/students');
     expect(request.request.headers.has('Authorization')).toBe(false);
     request.flush([]);

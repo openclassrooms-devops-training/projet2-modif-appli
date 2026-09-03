@@ -29,12 +29,15 @@ class StudentServiceTest {
 
     @Test
     void createPersistsAndReturnsStudent() {
+        // Arrange
         StudentRequestDTO request = request("Alice", "Martin", "alice@example.com");
         Student savedStudent = new Student(1L, "Alice", "Martin", "alice@example.com", null, null);
         when(studentRepository.save(any(Student.class))).thenReturn(savedStudent);
 
+        // Act
         var response = studentService.create(request);
 
+        // Assert
         assertThat(response.getId()).isEqualTo(1L);
         assertThat(response.getEmail()).isEqualTo("alice@example.com");
         verify(studentRepository).save(any(Student.class));
@@ -42,41 +45,52 @@ class StudentServiceTest {
 
     @Test
     void findByIdReturnsStudent() {
+        // Arrange
         Student student = new Student(1L, "Alice", "Martin", "alice@example.com", null, null);
         when(studentRepository.findById(1L)).thenReturn(Optional.of(student));
 
+        // Act
         var response = studentService.findById(1L);
 
+        // Assert
         assertThat(response.getFirstName()).isEqualTo("Alice");
     }
 
     @Test
     void updateChangesStudentFields() {
+        // Arrange
         Student student = new Student(1L, "Alice", "Martin", "alice@example.com", null, null);
         StudentRequestDTO request = request("Alicia", "Martin", "alicia@example.com");
         when(studentRepository.findById(1L)).thenReturn(Optional.of(student));
         when(studentRepository.save(any(Student.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
+        // Act
         var response = studentService.update(1L, request);
 
+        // Assert
         assertThat(response.getFirstName()).isEqualTo("Alicia");
         assertThat(response.getEmail()).isEqualTo("alicia@example.com");
     }
 
     @Test
     void deleteRemovesExistingStudent() {
+        // Arrange
         Student student = new Student(1L, "Alice", "Martin", "alice@example.com", null, null);
         when(studentRepository.findById(1L)).thenReturn(Optional.of(student));
 
+        // Act
         studentService.delete(1L);
 
+        // Assert
         verify(studentRepository).delete(student);
     }
 
     @Test
     void findByIdThrowsNotFoundForUnknownStudent() {
+        // Arrange
         when(studentRepository.findById(99L)).thenReturn(Optional.empty());
 
+        // Act & Assert
         assertThatThrownBy(() -> studentService.findById(99L))
                 .isInstanceOf(ResponseStatusException.class)
                 .hasMessageContaining("Student with id 99 not found");

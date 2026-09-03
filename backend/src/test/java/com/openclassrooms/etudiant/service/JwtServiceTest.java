@@ -25,8 +25,13 @@ class JwtServiceTest {
 
     @Test
     void generateTokenContainsUsernameAndExpiration() {
-        String token = jwtService.generateToken(User.withUsername("alice").password("ignored").roles("USER").build());
+        // Arrange
+        var userDetails = User.withUsername("alice").password("ignored").roles("USER").build();
 
+        // Act
+        String token = jwtService.generateToken(userDetails);
+
+        // Assert
         Claims claims = Jwts.parser()
                 .verifyWith(Keys.hmacShaKeyFor(SECRET.getBytes(StandardCharsets.UTF_8)))
                 .build()
@@ -40,18 +45,29 @@ class JwtServiceTest {
 
     @Test
     void extractUsernameReturnsTokenSubject() {
+        // Arrange
         String token = jwtService.generateToken(User.withUsername("alice").password("ignored").build());
 
-        assertThat(jwtService.extractUsername(token)).isEqualTo("alice");
+        // Act
+        String username = jwtService.extractUsername(token);
+
+        // Assert
+        assertThat(username).isEqualTo("alice");
     }
 
     @Test
     void generatedTokenIsValidForItsUser() {
+        // Arrange
         var user = User.withUsername("alice").password("ignored").build();
+        var anotherUser = User.withUsername("bob").password("ignored").build();
         String token = jwtService.generateToken(user);
 
-        assertThat(jwtService.isTokenValid(token, user)).isTrue();
-        assertThat(jwtService.isTokenValid(token,
-                User.withUsername("bob").password("ignored").build())).isFalse();
+        // Act
+        boolean validForOwner = jwtService.isTokenValid(token, user);
+        boolean validForAnotherUser = jwtService.isTokenValid(token, anotherUser);
+
+        // Assert
+        assertThat(validForOwner).isTrue();
+        assertThat(validForAnotherUser).isFalse();
     }
 }

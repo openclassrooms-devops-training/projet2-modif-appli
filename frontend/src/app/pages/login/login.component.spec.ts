@@ -33,20 +33,27 @@ describe('LoginComponent', () => {
   });
 
   it('should display validation errors for an empty form', () => {
+    // Arrange: form is left empty (default state after creation)
+
+    // Act
     component.onSubmit();
 
+    // Assert
     expect(component.submitted).toBe(true);
     expect(component.loginForm.invalid).toBe(true);
     expect(userServiceMock.login).not.toHaveBeenCalled();
   });
 
   it('should store the token and redirect after a successful login', () => {
+    // Arrange
     userServiceMock.login.mockReturnValue(of('jwt-token'));
     const navigateSpy = jest.spyOn(TestBed.inject(Router), 'navigate');
     component.loginForm.setValue({ login: 'alice', password: 'password' });
 
+    // Act
     component.onSubmit();
 
+    // Assert
     expect(userServiceMock.login).toHaveBeenCalledWith({ login: 'alice', password: 'password' });
     expect(localStorage.getItem('authToken')).toBe('jwt-token');
     expect(navigateSpy).toHaveBeenCalledWith(['/students']);
@@ -54,11 +61,14 @@ describe('LoginComponent', () => {
   });
 
   it('should display an error after an unauthorized login', () => {
+    // Arrange
     userServiceMock.login.mockReturnValue(throwError(() => ({ status: 401 })));
     component.loginForm.setValue({ login: 'alice', password: 'wrong-password' });
 
+    // Act
     component.onSubmit();
 
+    // Assert
     expect(component.errorMessage).toBe('Identifiants incorrects.');
     expect(localStorage.getItem('authToken')).toBeNull();
     expect(component.loading).toBe(false);

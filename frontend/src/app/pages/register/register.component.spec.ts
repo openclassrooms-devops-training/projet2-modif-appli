@@ -33,10 +33,12 @@ describe('RegisterComponent', () => {
   });
 
   it('should create', () => {
+    // Assert: the component was created successfully in beforeEach
     expect(component).toBeTruthy();
   });
 
   it('confirms a successful registration and redirects to login', () => {
+    // Arrange
     const navigateSpy = jest.spyOn(TestBed.inject(Router), 'navigate');
     component.registerForm.setValue({
       firstName: 'Alice',
@@ -45,8 +47,10 @@ describe('RegisterComponent', () => {
       password: 'password'
     });
 
+    // Act
     component.onSubmit();
 
+    // Assert
     expect(userServiceMock.register).toHaveBeenCalledWith({
       firstName: 'Alice',
       lastName: 'Martin',
@@ -58,6 +62,7 @@ describe('RegisterComponent', () => {
   });
 
   it('displays an error when registration fails', () => {
+    // Arrange
     userServiceMock.register.mockReturnValue(throwError(() => new Error('network')));
     component.registerForm.setValue({
       firstName: 'Alice',
@@ -66,8 +71,10 @@ describe('RegisterComponent', () => {
       password: 'password'
     });
 
+    // Act
     component.onSubmit();
 
+    // Assert
     expect(component.errorMessage).toContain('Impossible');
     expect(component.registrationSuccess).toBe(false);
   });

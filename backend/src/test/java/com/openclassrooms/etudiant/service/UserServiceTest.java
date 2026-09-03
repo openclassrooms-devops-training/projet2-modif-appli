@@ -41,16 +41,16 @@ public class UserServiceTest {
 
     @Test
     public void test_create_null_user_throws_IllegalArgumentException() {
-        // GIVEN
+        // Arrange: no setup needed, we pass a null user directly
 
-        // THEN
+        // Act & Assert
         Assertions.assertThrows(IllegalArgumentException.class,
                 () -> userService.register(null));
     }
 
     @Test
     public void test_create_already_exist_user_throws_IllegalArgumentException() {
-        // GIVEN
+        // Arrange
         User user = new User();
         user.setFirstName(FIRST_NAME);
         user.setLastName(LAST_NAME);
@@ -59,14 +59,14 @@ public class UserServiceTest {
         when(passwordEncoder.encode(PASSWORD)).thenReturn(PASSWORD);
         when(userRepository.findByLogin(any())).thenReturn(Optional.of(user));
 
-        // THEN
+        // Act & Assert
         Assertions.assertThrows(IllegalArgumentException.class,
                 () -> userService.register(user));
     }
 
     @Test
     public void test_create_user() {
-        // GIVEN
+        // Arrange
         User user = new User();
         user.setFirstName(FIRST_NAME);
         user.setLastName(LAST_NAME);
@@ -75,10 +75,10 @@ public class UserServiceTest {
         when(passwordEncoder.encode(PASSWORD)).thenReturn(PASSWORD);
         when(userRepository.findByLogin(any())).thenReturn(Optional.empty());
 
-        // WHEN
+        // Act
         userService.register(user);
 
-        // THEN
+        // Assert
         ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
         verify(userRepository).save(userCaptor.capture());
         assertThat(userCaptor.getValue()).isEqualTo(user);
@@ -86,21 +86,26 @@ public class UserServiceTest {
 
     @Test
     public void test_login_returns_token_on_valid_credentials() {
+        // Arrange
         User user = new User();
         user.setLogin(LOGIN);
         Authentication authentication = new UsernamePasswordAuthenticationToken(user, null);
         when(authenticationManager.authenticate(any())).thenReturn(authentication);
         when(jwtService.generateToken(user)).thenReturn("fake-jwt-token");
 
+        // Act
         String token = userService.login(LOGIN, PASSWORD);
 
+        // Assert
         assertThat(token).isEqualTo("fake-jwt-token");
     }
 
     @Test
     public void test_login_with_wrong_password_throws_BadCredentialsException() {
+        // Arrange
         when(authenticationManager.authenticate(any())).thenThrow(new BadCredentialsException("Bad credentials"));
 
+        // Act & Assert
         Assertions.assertThrows(BadCredentialsException.class,
                 () -> userService.login(LOGIN, "wrong-password"));
     }
