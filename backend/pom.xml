@@ -170,6 +170,17 @@
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
 				<version>${jacoco.version}</version>
+				<configuration>
+					<excludes>
+						<!-- Boilerplate genere par Lombok (getters/setters/equals/hashCode/toString/builder) :
+						     aucune logique a tester, exclu du calcul de couverture. -->
+						<exclude>**/dto/**</exclude>
+						<exclude>**/entities/**</exclude>
+						<exclude>**/handler/ErrorDetails.class</exclude>
+						<!-- Classe d'amorçage Spring Boot (juste un appel a SpringApplication.run) -->
+						<exclude>**/EtudiantBackendApplication.class</exclude>
+					</excludes>
+				</configuration>
 				<executions>
 					<execution>
 						<id>prepare-agent</id>

@@ -80,6 +80,7 @@ mvn test
 ```
 
 Rapport de couverture (JaCoCo) généré automatiquement : `backend/target/site/jacoco/index.html`
+Un instantané de ce rapport est aussi committé dans le dépôt et consultable en ligne (GitHub Pages) : https://openclassrooms-devops-training.github.io/projet2-modif-appli/backend/coverage-report/index.html
 
 ### Frontend (Jest)
 
@@ -89,6 +90,7 @@ npm test
 ```
 
 Rapport de couverture généré automatiquement : `frontend/coverage/index.html`
+Un instantané de ce rapport est aussi committé dans le dépôt et consultable en ligne (GitHub Pages) : https://openclassrooms-devops-training.github.io/projet2-modif-appli/frontend/coverage-report/index.html
 
 ### Tests end-to-end (Cypress)
 

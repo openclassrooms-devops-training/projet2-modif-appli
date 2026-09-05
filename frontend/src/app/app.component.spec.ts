@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 
 import { AppComponent } from './app.component';
 import { UserService } from './core/service/user.service';
@@ -78,6 +78,43 @@ describe('AppComponent', () => {
 
     // Assert
     expect(fixture.componentInstance.userInitials).toBe('RG');
+  });
+
+  it('returns empty initials when no user is loaded', () => {
+    // Arrange: no token in localStorage (cleared in beforeEach)
+    const fixture = TestBed.createComponent(AppComponent);
+    fixture.detectChanges();
+
+    // Assert
+    expect(fixture.componentInstance.userInitials).toBe('');
+  });
+
+  it('clears the current user when the profile request fails', () => {
+    // Arrange
+    userServiceMock.getProfile.mockReturnValue(throwError(() => new Error('network')));
+    localStorage.setItem('authToken', 'jwt-token');
+
+    // Act
+    const fixture = TestBed.createComponent(AppComponent);
+    fixture.detectChanges();
+
+    // Assert
+    expect(fixture.componentInstance.currentUser).toBeNull();
+  });
+
+  it('does not refetch the profile if it is already loaded', () => {
+    // Arrange
+    localStorage.setItem('authToken', 'jwt-token');
+    const fixture = TestBed.createComponent(AppComponent);
+    fixture.detectChanges();
+    expect(userServiceMock.getProfile).toHaveBeenCalledTimes(1);
+
+    // Act: simulate a second refresh trigger (e.g. a NavigationEnd event) while already loaded
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (fixture.componentInstance as any).refreshCurrentUser();
+
+    // Assert: still just the one call from ngOnInit, the "already loaded" guard short-circuits
+    expect(userServiceMock.getProfile).toHaveBeenCalledTimes(1);
   });
 
   it('clears the current user on logout', () => {

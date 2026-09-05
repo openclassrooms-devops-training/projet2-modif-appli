@@ -184,6 +184,13 @@ Après un scénario E2E, supprimer la base de test dédiée avec :
 
 Le frontend utilise Jest. Des tests fonctionnels complémentaires seront ajoutés au fil des étapes.
 
+### Rapports de couverture
+
+Un instantané des rapports de couverture est fourni dans le dépôt (régénéré à chaque `mvn test` / `npm test`, voir ci-dessus) :
+
+- Rapport de couverture backend (JaCoCo) — [voir en ligne (GitHub Pages)](https://openclassrooms-devops-training.github.io/projet2-modif-appli/backend/coverage-report/index.html) ou [dans le dépôt](backend/coverage-report/index.html) — 92 % instructions, 83 % branches, 94 % lignes, 91 % méthodes, 100 % classes (hors boilerplate Lombok des DTOs/entités, exclu du calcul).
+- Rapport de couverture frontend (Jest) — [voir en ligne (GitHub Pages)](https://openclassrooms-devops-training.github.io/projet2-modif-appli/frontend/coverage-report/index.html) ou [dans le dépôt](frontend/coverage-report/index.html) — 97 % instructions, 91 % branches, 92 % fonctions, 97 % lignes.
+
 ## Git et progression par étapes
 
 Le dépôt racine est le dépôt Git unique du monorepo. Les dossiers `backend/` et `frontend/` ne sont plus des dépôts indépendants.

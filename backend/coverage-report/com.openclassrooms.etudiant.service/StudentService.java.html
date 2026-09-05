@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>StudentService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">etudiant-backend</a> &gt; <a href="index.source.html" class="el_package">com.openclassrooms.etudiant.service</a> &gt; <span class="el_source">StudentService.java</span></div><h1>StudentService.java</h1><pre class="source lang-java linenums">package com.openclassrooms.etudiant.service;
+
+import com.openclassrooms.etudiant.dto.StudentRequestDTO;
+import com.openclassrooms.etudiant.dto.StudentResponseDTO;
+import com.openclassrooms.etudiant.entities.Student;
+import com.openclassrooms.etudiant.repository.StudentRepository;
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
+import org.springframework.http.HttpStatus;
+
+import java.util.List;
+
+@Service
+@Transactional
+@RequiredArgsConstructor
+public class StudentService {
+    private final StudentRepository studentRepository;
+
+    public StudentResponseDTO create(StudentRequestDTO request) {
+<span class="fc" id="L22">        Student student = new Student();</span>
+<span class="fc" id="L23">        updateStudent(student, request);</span>
+<span class="fc" id="L24">        return toResponse(studentRepository.save(student));</span>
+    }
+
+    public List&lt;StudentResponseDTO&gt; findAll() {
+<span class="nc" id="L28">        return studentRepository.findAll().stream().map(this::toResponse).toList();</span>
+    }
+
+    public StudentResponseDTO findById(Long id) {
+<span class="fc" id="L32">        return toResponse(findStudent(id));</span>
+    }
+
+    public StudentResponseDTO update(Long id, StudentRequestDTO request) {
+<span class="fc" id="L36">        Student student = findStudent(id);</span>
+<span class="fc" id="L37">        updateStudent(student, request);</span>
+<span class="fc" id="L38">        return toResponse(studentRepository.save(student));</span>
+    }
+
+    public void delete(Long id) {
+<span class="fc" id="L42">        Student student = findStudent(id);</span>
+<span class="fc" id="L43">        studentRepository.delete(student);</span>
+<span class="fc" id="L44">    }</span>
+
+    private Student findStudent(Long id) {
+<span class="fc" id="L47">        return studentRepository.findById(id)</span>
+<span class="fc" id="L48">            .orElseThrow(() -&gt; new ResponseStatusException(HttpStatus.NOT_FOUND,</span>
+<span class="fc" id="L49">                &quot;Student with id &quot; + id + &quot; not found&quot;));</span>
+    }
+
+    private void updateStudent(Student student, StudentRequestDTO request) {
+<span class="fc" id="L53">        student.setFirstName(request.getFirstName());</span>
+<span class="fc" id="L54">        student.setLastName(request.getLastName());</span>
+<span class="fc" id="L55">        student.setEmail(request.getEmail());</span>
+<span class="fc" id="L56">        student.setPhone(request.getPhone());</span>
+<span class="fc" id="L57">        student.setBirthDate(request.getBirthDate());</span>
+<span class="fc" id="L58">        student.setStudentNumber(request.getStudentNumber());</span>
+<span class="fc" id="L59">        student.setAddress(request.getAddress());</span>
+<span class="fc" id="L60">        student.setAvatarSeed(request.getAvatarSeed());</span>
+<span class="fc" id="L61">    }</span>
+
+    private StudentResponseDTO toResponse(Student student) {
+<span class="fc" id="L64">        return new StudentResponseDTO(student.getId(), student.getFirstName(), student.getLastName(),</span>
+<span class="fc" id="L65">                student.getEmail(), student.getPhone(), student.getBirthDate(), student.getStudentNumber(),</span>
+<span class="fc" id="L66">                student.getAddress(), student.getAvatarSeed(), student.getCreatedAt(), student.getUpdatedAt());</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

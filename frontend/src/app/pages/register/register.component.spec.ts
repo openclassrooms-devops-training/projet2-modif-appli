@@ -37,6 +37,52 @@ describe('RegisterComponent', () => {
     expect(component).toBeTruthy();
   });
 
+  it('exposes the reactive form controls via the form getter', () => {
+    // Assert
+    expect(component.form).toBe(component.registerForm.controls);
+  });
+
+  it('does not submit an invalid form', () => {
+    // Arrange: form is left empty (invalid)
+
+    // Act
+    component.onSubmit();
+
+    // Assert
+    expect(component.submitted).toBe(true);
+    expect(userServiceMock.register).not.toHaveBeenCalled();
+  });
+
+  it('resets the form and its state via onReset()', () => {
+    // Arrange
+    component.registerForm.setValue({
+      firstName: 'Alice', lastName: 'Martin', login: 'alice', password: 'password'
+    });
+    component.onSubmit();
+    component.registrationSuccess = true;
+    component.errorMessage = 'Impossible';
+
+    // Act
+    component.onReset();
+
+    // Assert
+    expect(component.submitted).toBe(false);
+    expect(component.registrationSuccess).toBe(false);
+    expect(component.errorMessage).toBe('');
+    expect(component.registerForm.pristine).toBe(true);
+  });
+
+  it('navigates to login via goToLogin()', () => {
+    // Arrange
+    const navigateSpy = jest.spyOn(TestBed.inject(Router), 'navigate');
+
+    // Act
+    component.goToLogin();
+
+    // Assert
+    expect(navigateSpy).toHaveBeenCalledWith(['/login']);
+  });
+
   it('confirms a successful registration and redirects to login', () => {
     // Arrange
     const navigateSpy = jest.spyOn(TestBed.inject(Router), 'navigate');

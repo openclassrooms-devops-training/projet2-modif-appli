@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>JwtService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">etudiant-backend</a> &gt; <a href="index.source.html" class="el_package">com.openclassrooms.etudiant.service</a> &gt; <span class="el_source">JwtService.java</span></div><h1>JwtService.java</h1><pre class="source lang-java linenums">package com.openclassrooms.etudiant.service;
+
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Service;
+
+import java.nio.charset.StandardCharsets;
+import java.security.Key;
+import java.util.Date;
+import java.util.function.Function;
+
+@Service
+<span class="fc" id="L15">public class JwtService {</span>
+
+    @Value(&quot;${jwt.secret}&quot;)
+    private String secret;
+
+    @Value(&quot;${jwt.expiration-ms}&quot;)
+    private long expirationMs;
+
+    public String generateToken(UserDetails userDetails) {
+<span class="fc" id="L24">        Key key = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));</span>
+<span class="fc" id="L25">        Date now = new Date();</span>
+<span class="fc" id="L26">        return Jwts.builder()</span>
+<span class="fc" id="L27">                .subject(userDetails.getUsername())</span>
+<span class="fc" id="L28">                .issuedAt(now)</span>
+<span class="fc" id="L29">                .expiration(new Date(now.getTime() + expirationMs))</span>
+<span class="fc" id="L30">                .signWith(key)</span>
+<span class="fc" id="L31">                .compact();</span>
+    }
+
+    public String extractUsername(String token) {
+<span class="fc" id="L35">        return extractClaim(token, claims -&gt; claims.getSubject());</span>
+    }
+
+    public boolean isTokenValid(String token, UserDetails userDetails) {
+<span class="pc bpc" id="L39" title="1 of 4 branches missed.">        return userDetails.getUsername().equals(extractUsername(token)) &amp;&amp; !isTokenExpired(token);</span>
+    }
+
+    private boolean isTokenExpired(String token) {
+<span class="fc" id="L43">        return extractClaim(token, claims -&gt; claims.getExpiration()).before(new Date());</span>
+    }
+
+    private &lt;T&gt; T extractClaim(String token, Function&lt;io.jsonwebtoken.Claims, T&gt; resolver) {
+<span class="fc" id="L47">        return resolver.apply(Jwts.parser().verifyWith(Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8)))</span>
+<span class="fc" id="L48">                .build().parseSignedClaims(token).getPayload());</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

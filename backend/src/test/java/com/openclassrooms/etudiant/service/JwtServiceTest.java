@@ -1,6 +1,7 @@
 package com.openclassrooms.etudiant.service;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.junit.jupiter.api.BeforeEach;
@@ -11,6 +12,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import java.nio.charset.StandardCharsets;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class JwtServiceTest {
     private static final String SECRET = "9AF15303B8CD41F98B4EB5A9A9A927E9EDD5C0A2E8BF9AB77BCA2C86C88E6ED";
@@ -69,5 +71,20 @@ class JwtServiceTest {
         // Assert
         assertThat(validForOwner).isTrue();
         assertThat(validForAnotherUser).isFalse();
+    }
+
+    @Test
+    void expiredTokenIsRejectedWhileParsingBeforeTheExplicitExpiryCheckRuns() {
+        // Arrange: force a token whose expiration is already in the past.
+        // jjwt's own parser rejects an expired token during parseSignedClaims(), so
+        // isTokenValid() never actually reaches its own "!isTokenExpired(token)" check
+        // for a genuinely expired token - it fails earlier, inside extractUsername().
+        ReflectionTestUtils.setField(jwtService, "expirationMs", -1_000L);
+        var user = User.withUsername("alice").password("ignored").build();
+        String token = jwtService.generateToken(user);
+
+        // Act & Assert
+        assertThatThrownBy(() -> jwtService.isTokenValid(token, user))
+                .isInstanceOf(ExpiredJwtException.class);
     }
 }

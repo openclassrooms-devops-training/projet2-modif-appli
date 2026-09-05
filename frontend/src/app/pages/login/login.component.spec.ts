@@ -32,6 +32,29 @@ describe('LoginComponent', () => {
     fixture.detectChanges();
   });
 
+  it('exposes the reactive form controls via the form getter', () => {
+    // Assert
+    expect(component.form).toBe(component.loginForm.controls);
+  });
+
+  it('resets the form and its state via onReset()', () => {
+    // Arrange
+    component.loginForm.setValue({ login: 'alice', password: 'password' });
+    component.submitted = true;
+    component.errorMessage = 'Identifiants incorrects.';
+    component.successMessage = 'ok';
+
+    // Act
+    component.onReset();
+
+    // Assert
+    expect(component.submitted).toBe(false);
+    expect(component.loading).toBe(false);
+    expect(component.errorMessage).toBe('');
+    expect(component.successMessage).toBe('');
+    expect(component.loginForm.pristine).toBe(true);
+  });
+
   it('should display validation errors for an empty form', () => {
     // Arrange: form is left empty (default state after creation)
 

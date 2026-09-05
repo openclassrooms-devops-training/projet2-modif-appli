@@ -1,0 +1,14 @@
+GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
+etudiant-backend,com.openclassrooms.etudiant.mapper,UserDtoMapperImpl,2,27,1,1,1,8,1,2,0,2
+etudiant-backend,com.openclassrooms.etudiant.controller,UserController,0,34,0,0,0,5,0,3,0,3
+etudiant-backend,com.openclassrooms.etudiant.controller,StudentController,5,28,0,0,1,5,1,4,1,4
+etudiant-backend,com.openclassrooms.etudiant.handler,RestExceptionHandler,29,52,0,0,6,10,2,5,2,5
+etudiant-backend,com.openclassrooms.etudiant.configuration,OpenApiConfig,0,38,0,0,0,12,0,2,0,2
+etudiant-backend,com.openclassrooms.etudiant.configuration,AppConfig,0,15,0,0,0,4,0,2,0,2
+etudiant-backend,com.openclassrooms.etudiant.configuration.logging,RequestLoggingFilterConfig,0,24,0,0,0,8,0,2,0,2
+etudiant-backend,com.openclassrooms.etudiant.service,UserService,0,61,0,2,0,14,0,4,0,3
+etudiant-backend,com.openclassrooms.etudiant.service,JwtService,0,84,1,3,0,14,1,9,0,8
+etudiant-backend,com.openclassrooms.etudiant.service,StudentService,9,123,0,0,1,25,1,8,1,8
+etudiant-backend,com.openclassrooms.etudiant.configuration.security,SpringSecurityConfig,0,101,0,0,0,23,0,9,0,9
+etudiant-backend,com.openclassrooms.etudiant.configuration.security,JwtAuthenticationFilter,0,66,1,9,0,17,1,5,0,1
+etudiant-backend,com.openclassrooms.etudiant.configuration.security,CustomUserDetailService,6,9,0,0,0,2,1,1,1,1
