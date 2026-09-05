@@ -74,7 +74,8 @@ describe('EtuBibliotheque', () => {
     loginThroughUi(login);
     cy.url().should('include', '/students');
 
-    // Act: create a student
+    // Act: open the add form and create a student
+    cy.contains('button', '+ Ajouter').click();
     cy.get('input[formcontrolname="firstName"]').type('Alice');
     cy.get('input[formcontrolname="lastName"]').type('Martin');
     cy.get('input[formcontrolname="email"]').type(`${login}@example.com`);
@@ -91,9 +92,9 @@ describe('EtuBibliotheque', () => {
     // Assert: the updated email is displayed
     cy.contains(`${login}.updated@example.com`).should('be.visible');
 
-    // Act: delete the student
-    cy.on('window:confirm', () => true);
+    // Act: delete the student (opens a confirmation popup, then confirm)
     cy.contains('button', 'Supprimer').click();
+    cy.contains('button', 'Oui, supprimer').click();
 
     // Assert: the student is gone from the list
     cy.contains(`${login}.updated@example.com`).should('not.exist');

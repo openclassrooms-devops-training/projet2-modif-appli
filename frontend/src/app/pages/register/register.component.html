@@ -1,94 +1,60 @@
-<div class="card m-3 registration-card">
-  <h5 class="card-header">Inscription d’un agent</h5>
-  <div class="card-body">
+<section class="auth-page">
+  <header class="page-heading">
+    <p class="eyebrow">EtuBibliothèque · Registre</p>
+    <h1>Inscription d'un agent</h1>
+    <p>Créez un compte pour gérer les inscriptions de la bibliothèque.</p>
+  </header>
+
+  <section class="panel auth-panel">
     @if (registrationSuccess) {
       <div class="confirmation" role="status">
         <span class="confirmation-mark">✓</span>
         <div>
           <h2>Inscription confirmée</h2>
           <p>Votre compte agent a bien été créé. Vous pouvez maintenant vous connecter.</p>
-          <button class="btn btn-primary" type="button" (click)="goToLogin()">Accéder à la connexion</button>
+          <button class="primary-button" type="button" (click)="goToLogin()">Accéder à la connexion</button>
         </div>
       </div>
     } @else {
-    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
-      <div class="form-row">
-        <div class="form-group col-5">
-          <label>First Name</label>
-          <input
-            type="text"
-            formControlName="firstName"
-            class="form-control"
-            [ngClass]="{ 'is-invalid': submitted && form['firstName'].errors }"
-          />
-          @if (submitted && form['firstName'].errors) {
-            <div class="invalid-feedback">
-              @if (form['firstName'].errors?.['required']) {
-                <div>First Name is required</div>
-              }
-            </div>
-          }
-        </div>
-        <div class="form-group col-5">
-          <label>Last Name</label>
-          <input
-            type="text"
-            formControlName="lastName"
-            class="form-control"
-            [ngClass]="{ 'is-invalid': submitted && form['lastName'].errors }"
-          />
-          @if (submitted && form['lastName'].errors) {
-            <div class="invalid-feedback">
-              @if (form['lastName'].errors?.['required']) {
-                <div>Last Name is required</div>
-              }
-            </div>
-          }
-        </div>
-      </div>
-      @if (errorMessage) {
-        <div class="alert alert-danger" role="alert">{{ errorMessage }}</div>
-      }
-      <div class="form-group">
-        <label>Login</label>
-        <input
-          type="text"
-          formControlName="login"
-          class="form-control"
-          [ngClass]="{ 'is-invalid': submitted && form['login'].errors }"
-        />
-        @if (submitted && form['login'].errors) {
-          <div class="invalid-feedback">
-            @if (form['login'].errors?.['required']) {
-              <div>Login is required</div>
+      <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" novalidate>
+        <div class="form-columns">
+          <div>
+            <label for="firstName">Prénom</label>
+            <input id="firstName" type="text" formControlName="firstName" [class.invalid]="submitted && form['firstName'].errors" />
+            @if (submitted && form['firstName'].errors?.['required']) {
+              <span class="field-error">Le prénom est obligatoire.</span>
             }
           </div>
-        }
-      </div>
+          <div>
+            <label for="lastName">Nom</label>
+            <input id="lastName" type="text" formControlName="lastName" [class.invalid]="submitted && form['lastName'].errors" />
+            @if (submitted && form['lastName'].errors?.['required']) {
+              <span class="field-error">Le nom est obligatoire.</span>
+            }
+          </div>
+        </div>
 
-      <div class="form-group">
-        <label>Password</label>
-        <input
-          type="password"
-          formControlName="password"
-          class="form-control"
-          [ngClass]="{ 'is-invalid': submitted && form['password'].errors }"
-        />
-        @if (submitted && form['password'].errors) {
-          <div class="invalid-feedback">
-            @if (form['password'].errors?.['required']) {
-              <div>password is required</div>
-            }
-          </div>
+        <label for="login">Login</label>
+        <input id="login" type="text" formControlName="login" [class.invalid]="submitted && form['login'].errors" />
+        @if (submitted && form['login'].errors?.['required']) {
+          <span class="field-error">Le login est obligatoire.</span>
         }
-      </div>
-      <div class="text-center">
-        <button class="btn btn-primary mr-1" type="submit">Register</button>
-        <button class="btn btn-secondary" type="reset" (click)="onReset()">
-          Cancel
-        </button>
-      </div>
-    </form>
+
+        <label for="password">Mot de passe</label>
+        <input id="password" type="password" formControlName="password" [class.invalid]="submitted && form['password'].errors" />
+        @if (submitted && form['password'].errors?.['required']) {
+          <span class="field-error">Le mot de passe est obligatoire.</span>
+        }
+
+        @if (errorMessage) {
+          <div class="notice error" role="alert">{{ errorMessage }}</div>
+        }
+
+        <div class="form-actions">
+          <button class="primary-button" type="submit">S'inscrire</button>
+          <button class="secondary-button" type="reset" (click)="onReset()">Annuler</button>
+        </div>
+      </form>
     }
-  </div>
-</div>
+  </section>
+</section>

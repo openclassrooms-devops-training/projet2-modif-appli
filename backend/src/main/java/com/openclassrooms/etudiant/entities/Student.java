@@ -9,16 +9,19 @@ import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @Entity
 @Table(name = "student")
 public class Student {
@@ -38,6 +41,16 @@ public class Student {
     @Email
     @Column(nullable = false)
     private String email;
+
+    private String phone;
+
+    private LocalDate birthDate;
+
+    private String studentNumber;
+
+    private String address;
+
+    private String avatarSeed;
 
     @CreationTimestamp
     private LocalDateTime createdAt;

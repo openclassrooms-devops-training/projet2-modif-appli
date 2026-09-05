@@ -2,6 +2,8 @@ package com.openclassrooms.etudiant.controller;
 
 import com.openclassrooms.etudiant.dto.LoginRequestDTO;
 import com.openclassrooms.etudiant.dto.RegisterDTO;
+import com.openclassrooms.etudiant.dto.UserProfileDTO;
+import com.openclassrooms.etudiant.entities.User;
 import com.openclassrooms.etudiant.mapper.UserDtoMapper;
 import com.openclassrooms.etudiant.service.UserService;
 import jakarta.validation.Valid;
@@ -12,6 +14,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -49,5 +53,14 @@ public class UserController {
         return ResponseEntity.ok(jwtToken);
     }
 
+    @GetMapping("/api/me")
+    @Operation(summary = "Profil de l'agent connecté", description = "Retourne l'identité de l'agent actuellement authentifié.")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Profil de l'agent"),
+        @ApiResponse(responseCode = "401", description = "Non authentifié")
+    })
+    public ResponseEntity<UserProfileDTO> me(@AuthenticationPrincipal User user) {
+        return ResponseEntity.ok(new UserProfileDTO(user.getFirstName(), user.getLastName(), user.getLogin()));
+    }
 
 }

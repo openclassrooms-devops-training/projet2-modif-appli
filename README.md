@@ -9,6 +9,8 @@ L'application permet de gérer les agents et les étudiants abonnés à une bibl
 
 Le dossier `doc/` contient les analyses et comptes rendus des étapes réalisées.
 
+> 📘 **Pour cloner et lancer le projet en local, suivre le [guide de déploiement](doc/deploiement.md).**
+
 ## Architecture actuelle
 
 ```text
@@ -52,7 +54,7 @@ mvn spring-boot:run
 
 Le backend démarre sur : http://localhost:8080
 
-Le fichier `backend/compose.yaml` démarre automatiquement le conteneur MySQL via l'intégration Docker Compose de Spring Boot. Les paramètres de connexion sont définis dans `backend/.env` et utilisés par `backend/src/main/resources/application.yml`.
+Le fichier `backend/compose.yaml` démarre automatiquement le conteneur MySQL via l'intégration Docker Compose de Spring Boot. Les paramètres de connexion sont définis dans `backend/.env` (non versionné, voir le [guide de déploiement](doc/deploiement.md) pour le créer à partir de `backend/.env.example`) et utilisés par `backend/src/main/resources/application.yml`.
 
 ### 2. Démarrer le frontend
 
@@ -204,6 +206,7 @@ git push
 
 ## Documentation du projet
 
+- [Guide de déploiement](doc/deploiement.md)
 - [Analyse initiale](doc/analyse-projet.md)
 - [Étape 2 : authentification et Swagger](doc/etape02-auth-api.md)
 - [Étape 3 : écran de connexion frontend](doc/etape03-login-frontend.md)

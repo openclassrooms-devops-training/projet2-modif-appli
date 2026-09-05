@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Register } from '../models/Register';
 import { Login } from '../models/Login';
+import { UserProfile } from '../models/UserProfile';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
@@ -16,5 +17,9 @@ export class UserService {
 
   login(user: Login): Observable<string> {
     return this.httpClient.post('/api/login', user, { responseType: 'text' });
+  }
+
+  getProfile(): Observable<UserProfile> {
+    return this.httpClient.get<UserProfile>('/api/me');
   }
 }

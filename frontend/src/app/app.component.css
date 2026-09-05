@@ -14,6 +14,19 @@
 nav { gap: 1.2rem; }
 nav a, .logout-button { background: none; border: 0; color: #dfe5e4; cursor: pointer; font: inherit; font-size: .85rem; text-decoration: none; }
 nav a:hover, nav a.active, .logout-button:hover { color: #d8b26e; }
+.user-badge {
+	align-items: center;
+	background: #d8b26e;
+	border-radius: 50%;
+	color: #1e2830;
+	display: flex;
+	flex: 0 0 2rem;
+	font-size: .75rem;
+	font-weight: 700;
+	height: 2rem;
+	justify-content: center;
+	width: 2rem;
+}
 
 @media (max-width: 760px) {
 	.site-header { align-items: flex-start; flex-direction: column; gap: .8rem; padding: .8rem 1rem; }

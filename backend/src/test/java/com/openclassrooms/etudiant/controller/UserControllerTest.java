@@ -189,6 +189,33 @@ public class UserControllerTest {
     }
 
     @Test
+    public void meReturnsUnauthorizedWithoutToken() throws Exception {
+        // Arrange: no Authorization header is sent
+
+        // Act
+        var result = mockMvc.perform(MockMvcRequestBuilders.get("/api/me"));
+
+        // Assert
+        result.andExpect(MockMvcResultMatchers.status().isUnauthorized());
+    }
+
+    @Test
+    public void meReturnsTheAuthenticatedAgentProfile() throws Exception {
+        // Arrange
+        String token = authenticateUser();
+
+        // Act
+        var result = mockMvc.perform(MockMvcRequestBuilders.get("/api/me")
+                        .header("Authorization", "Bearer " + token));
+
+        // Assert
+        result.andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.firstName").value(FIRST_NAME))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.lastName").value(LAST_NAME))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.login").value("student-test-user"));
+    }
+
+    @Test
     public void studentCrudWorksWithValidToken() throws Exception {
         // Arrange
         String token = authenticateUser();

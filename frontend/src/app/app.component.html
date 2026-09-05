@@ -9,6 +9,9 @@
 		@if (isDevelopment) {
 			<a href="http://localhost:8080/swagger-ui/index.html" target="_blank" rel="noreferrer">Swagger</a>
 		}
+		@if (currentUser) {
+			<span class="user-badge" [title]="currentUser.firstName + ' ' + currentUser.lastName">{{ userInitials }}</span>
+		}
 		<button type="button" class="logout-button" (click)="logout()">Déconnexion</button>
 	</nav>
 </header>

@@ -53,10 +53,16 @@ public class StudentService {
         student.setFirstName(request.getFirstName());
         student.setLastName(request.getLastName());
         student.setEmail(request.getEmail());
+        student.setPhone(request.getPhone());
+        student.setBirthDate(request.getBirthDate());
+        student.setStudentNumber(request.getStudentNumber());
+        student.setAddress(request.getAddress());
+        student.setAvatarSeed(request.getAvatarSeed());
     }
 
     private StudentResponseDTO toResponse(Student student) {
         return new StudentResponseDTO(student.getId(), student.getFirstName(), student.getLastName(),
-                student.getEmail(), student.getCreatedAt(), student.getUpdatedAt());
+                student.getEmail(), student.getPhone(), student.getBirthDate(), student.getStudentNumber(),
+                student.getAddress(), student.getAvatarSeed(), student.getCreatedAt(), student.getUpdatedAt());
     }
 }

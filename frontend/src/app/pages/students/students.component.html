@@ -12,14 +12,17 @@
     <div class="notice success" role="status">{{ successMessage }}</div>
   }
 
-  <div class="workspace-grid">
+  <div class="workspace-grid" [class.single-column]="!showForm && !showDetailPanel">
     <section class="panel directory-panel">
       <div class="panel-heading">
         <div>
           <p class="section-label">Annuaire</p>
           <h2>Liste des étudiants</h2>
+          <p class="student-count">{{ students.length }} étudiant{{ students.length === 1 ? '' : 's' }} inscrit{{ students.length === 1 ? '' : 's' }}</p>
         </div>
-        <span class="count">{{ students.length }}</span>
+        @if (!showForm) {
+          <button type="button" class="primary-button add-button" (click)="openAddForm()">+ Ajouter</button>
+        }
       </div>
 
       @if (loading && students.length === 0) {
@@ -31,7 +34,7 @@
           @for (student of students; track student.id) {
             <article class="student-row" [class.selected]="selectedStudent?.id === student.id">
               <button class="student-summary" type="button" (click)="selectStudent(student)">
-                <span class="initials">{{ student.firstName.charAt(0) }}{{ student.lastName.charAt(0) }}</span>
+                <img class="avatar" [src]="avatarUrl(student.avatarSeed || student.id)" alt="" />
                 <span>
                   <strong>{{ student.firstName }} {{ student.lastName }}</strong>
                   <small>{{ student.email }}</small>
@@ -47,37 +50,94 @@
       }
     </section>
 
-    <section class="panel form-panel">
-      <p class="section-label">{{ editingId === null ? 'Nouvelle fiche' : 'Fiche en édition' }}</p>
-      <h2>{{ editingId === null ? 'Ajouter un étudiant' : 'Modifier l’étudiant' }}</h2>
-      <form [formGroup]="studentForm" (ngSubmit)="onSubmit()" novalidate>
-        <label for="firstName">Prénom</label>
-        <input id="firstName" type="text" formControlName="firstName" [class.invalid]="submitted && form['firstName'].errors" />
-        @if (submitted && form['firstName'].errors) { <span class="field-error">Le prénom est obligatoire.</span> }
+    @if (showDetailPanel && selectedStudent; as student) {
+      <section class="panel detail-panel">
+        <p class="section-label">Fiche étudiant</p>
+        <img class="avatar detail-avatar" [src]="avatarUrl(student.avatarSeed || student.id)" alt="" />
+        <h2>{{ student.firstName }} {{ student.lastName }}</h2>
 
-        <label for="lastName">Nom</label>
-        <input id="lastName" type="text" formControlName="lastName" [class.invalid]="submitted && form['lastName'].errors" />
-        @if (submitted && form['lastName'].errors) { <span class="field-error">Le nom est obligatoire.</span> }
+        <dl class="detail-list">
+          <dt>Adresse e-mail</dt>
+          <dd>{{ student.email }}</dd>
 
-        <label for="email">Adresse e-mail</label>
-        <input id="email" type="email" formControlName="email" [class.invalid]="submitted && form['email'].errors" />
-        @if (submitted && form['email'].errors) { <span class="field-error">Une adresse e-mail valide est obligatoire.</span> }
+          <dt>Téléphone</dt>
+          <dd>{{ student.phone || 'Non renseigné' }}</dd>
+
+          <dt>Date de naissance</dt>
+          <dd>{{ student.birthDate ? (student.birthDate | date: 'dd/MM/yyyy') : 'Non renseignée' }}</dd>
+
+          <dt>Numéro étudiant</dt>
+          <dd>{{ student.studentNumber || 'Non renseigné' }}</dd>
+
+          <dt>Adresse</dt>
+          <dd>{{ student.address || 'Non renseignée' }}</dd>
+
+          @if (student.createdAt) {
+            <dt>Inscrit·e depuis le</dt>
+            <dd>{{ student.createdAt | date: 'dd/MM/yyyy' }}</dd>
+          }
+        </dl>
 
         <div class="form-actions">
-          <button class="primary-button" type="submit" [disabled]="loading">{{ editingId === null ? 'Ajouter' : 'Enregistrer' }}</button>
-          @if (editingId !== null) { <button class="secondary-button" type="button" (click)="cancelEdit()">Annuler</button> }
+          <button type="button" class="primary-button" (click)="editStudent(student)">Modifier</button>
+          <button type="button" class="secondary-button" (click)="closeDetail()">Fermer</button>
         </div>
-      </form>
-    </section>
+      </section>
+    }
+
+    @if (showForm) {
+      <section class="panel form-panel">
+        <p class="section-label">{{ editingId === null ? 'Nouvelle fiche' : 'Fiche en édition' }}</p>
+        <h2>{{ editingId === null ? 'Ajouter un étudiant' : 'Modifier l’étudiant' }}</h2>
+        <form [formGroup]="studentForm" (ngSubmit)="onSubmit()" novalidate>
+          <button type="button" class="avatar-picker" (click)="regenerateAvatar()" title="Cliquer pour changer l'avatar">
+            <img class="avatar avatar-preview" [src]="avatarUrl(avatarPreviewSeed)" alt="" />
+          </button>
+          <p class="avatar-hint">Cliquer sur l'avatar pour en générer un autre</p>
+
+          <label for="firstName">Prénom</label>
+          <input id="firstName" type="text" formControlName="firstName" [class.invalid]="submitted && form['firstName'].errors" />
+          @if (submitted && form['firstName'].errors) { <span class="field-error">Le prénom est obligatoire.</span> }
+
+          <label for="lastName">Nom</label>
+          <input id="lastName" type="text" formControlName="lastName" [class.invalid]="submitted && form['lastName'].errors" />
+          @if (submitted && form['lastName'].errors) { <span class="field-error">Le nom est obligatoire.</span> }
+
+          <label for="email">Adresse e-mail</label>
+          <input id="email" type="email" formControlName="email" [class.invalid]="submitted && form['email'].errors" />
+          @if (submitted && form['email'].errors) { <span class="field-error">Une adresse e-mail valide est obligatoire.</span> }
+
+          <label for="phone">Téléphone</label>
+          <input id="phone" type="tel" formControlName="phone" />
+
+          <label for="birthDate">Date de naissance</label>
+          <input id="birthDate" type="date" formControlName="birthDate" />
+
+          <label for="studentNumber">Numéro étudiant</label>
+          <input id="studentNumber" type="text" formControlName="studentNumber" />
+
+          <label for="address">Adresse</label>
+          <input id="address" type="text" formControlName="address" />
+
+          <div class="form-actions">
+            <button class="primary-button" type="submit" [disabled]="loading">{{ editingId === null ? 'Ajouter' : 'Enregistrer' }}</button>
+            <button class="secondary-button" type="button" (click)="cancelEdit()">Annuler</button>
+          </div>
+        </form>
+      </section>
+    }
   </div>
 
-  @if (selectedStudent) {
-    <section class="detail-strip">
-      <div>
-        <p class="section-label">Détail sélectionné</p>
-        <h2>{{ selectedStudent.firstName }} {{ selectedStudent.lastName }}</h2>
+  @if (studentPendingDeletion; as student) {
+    <div class="confirm-backdrop" (click)="cancelDeleteConfirmation()">
+      <div class="confirm-dialog" role="alertdialog" aria-modal="true" aria-labelledby="delete-dialog-title" (click)="$event.stopPropagation()">
+        <h2 id="delete-dialog-title">Supprimer cet étudiant ?</h2>
+        <p>Êtes-vous sûr de vouloir supprimer <strong>{{ student.firstName }} {{ student.lastName }}</strong> ? Cette action est irréversible.</p>
+        <div class="confirm-actions">
+          <button type="button" class="danger-button" (click)="deleteStudent(student)">Oui, supprimer</button>
+          <button type="button" class="secondary-button" (click)="cancelDeleteConfirmation()">Annuler</button>
+        </div>
       </div>
-      <p>{{ selectedStudent.email }}</p>
-    </section>
+    </div>
   }
 </section>
