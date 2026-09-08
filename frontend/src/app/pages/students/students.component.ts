@@ -1,12 +1,23 @@
 import { CommonModule } from '@angular/common';
 import { Component, DestroyRef, HostListener, inject, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, Validators } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Student, StudentRequest } from '../../core/models/Student';
 import { StudentService } from '../../core/service/student.service';
 import { MaterialModule } from '../../shared/material.module';
 
 const MESSAGE_DURATION_MS = 4000;
+
+function todayIsoDate(): string {
+  return new Date().toISOString().slice(0, 10);
+}
+
+function pastDateValidator(control: AbstractControl): ValidationErrors | null {
+  if (!control.value) {
+    return null;
+  }
+  return control.value < todayIsoDate() ? null : { notPast: true };
+}
 
 @Component({
   selector: 'app-students',
@@ -31,6 +42,7 @@ export class StudentsComponent implements OnInit {
   loading = false;
   errorMessage = '';
   successMessage = '';
+  readonly todayIso = todayIsoDate();
 
   ngOnInit(): void {
     this.studentForm = this.formBuilder.group({
@@ -38,7 +50,7 @@ export class StudentsComponent implements OnInit {
       lastName: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
       phone: [''],
-      birthDate: [''],
+      birthDate: ['', pastDateValidator],
       studentNumber: [''],
       address: [''],
       avatarSeed: ['']

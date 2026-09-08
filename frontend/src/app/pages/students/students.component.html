@@ -111,7 +111,8 @@
           <input id="phone" type="tel" formControlName="phone" />
 
           <label for="birthDate">Date de naissance</label>
-          <input id="birthDate" type="date" formControlName="birthDate" />
+          <input id="birthDate" type="date" formControlName="birthDate" [max]="todayIso" [class.invalid]="submitted && form['birthDate'].errors" />
+          @if (submitted && form['birthDate'].errors) { <span class="field-error">La date de naissance doit être dans le passé.</span> }
 
           <label for="studentNumber">Numéro étudiant</label>
           <input id="studentNumber" type="text" formControlName="studentNumber" />
